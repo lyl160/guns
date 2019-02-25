@@ -16,7 +16,9 @@
 package cn.stylefeng.guns.modular.system.controller;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.core.common.annotion.BussinessLog;
+import cn.stylefeng.guns.core.common.annotion.Permission;
 import cn.stylefeng.guns.core.common.constant.dictmap.CustomerMap;
 import cn.stylefeng.guns.core.common.constant.factory.ConstantFactory;
 import cn.stylefeng.guns.core.common.exception.BizExceptionEnum;
@@ -38,7 +41,10 @@ import cn.stylefeng.guns.core.common.page.LayuiPageFactory;
 import cn.stylefeng.guns.core.log.LogObjectHolder;
 import cn.stylefeng.guns.core.shiro.ShiroKit;
 import cn.stylefeng.guns.modular.system.entity.Customer;
+import cn.stylefeng.guns.modular.system.entity.User;
+import cn.stylefeng.guns.modular.system.model.CustomerDto;
 import cn.stylefeng.guns.modular.system.service.CustomerService;
+import cn.stylefeng.guns.modular.system.service.UserService;
 import cn.stylefeng.guns.modular.system.warpper.CustomerWrapper;
 import cn.stylefeng.roses.core.base.controller.BaseController;
 import cn.stylefeng.roses.core.util.ToolUtil;
@@ -58,6 +64,8 @@ public class CustomerController extends BaseController {
 
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 跳转到客户列表首页
@@ -66,7 +74,8 @@ public class CustomerController extends BaseController {
      * @Date 2018/12/23 6:06 PM
      */
     @RequestMapping("")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("currentUserId", ShiroKit.getUserNotNull().getId());
         return PREFIX + "customer.html";
     }
 
@@ -87,13 +96,49 @@ public class CustomerController extends BaseController {
      * @author fengshuonan
      * @Date 2018/12/23 6:06 PM
      */
-    @RequestMapping("/customer_update/{customerId}")
-    public String CustomerUpdate(@PathVariable Long customerId, Model model) {
+    @RequestMapping("/customer_update")
+    public String CustomerUpdate(@RequestParam Long customerId, Model model) {
         Customer customer = this.customerService.getById(customerId);
         model.addAllAttributes(BeanUtil.beanToMap(customer));
         LogObjectHolder.me().set(customer);
-        return PREFIX + "Customer_edit.html";
+        return PREFIX + "customer_edit.html";
     }
+
+    /**
+     * 跳转到修改客户
+     *
+     * @author fengshuonan
+     * @Date 2018/12/23 6:06 PM
+     */
+    @RequestMapping("/customer_share")
+    public String CustomerShare(@RequestParam Long customerId, Model model) {
+        Customer customer = this.customerService.getById(customerId);
+        model.addAttribute("customer", customer);
+        LogObjectHolder.me().set(customer);
+        List<User> userList = userService.list();
+        userList = userList.stream()
+                .filter(u -> !u.getUserId().equals(ShiroKit.getUserNotNull().getId()))
+                .collect(Collectors.toList());
+        model.addAttribute("userList", userList);
+        return PREFIX + "customer_share.html";
+    }
+
+    /**
+     * 跳转到修改客户
+     *
+     * @author fengshuonan
+     * @Date 2018/12/23 6:06 PM
+     */
+    @RequestMapping("/share")
+    @ResponseBody
+    public Object share(Customer customer,@RequestParam(name = "userIdList", required = false) String userIdList, Model model) {
+        if (ToolUtil.isOneEmpty(customer.getCustomerId(), userIdList)) {
+            throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
+        }
+        customerService.saveShare(customer.getCustomerId(), userIdList);
+        return SUCCESS_TIP;
+    }
+
 
 
     /**
@@ -105,10 +150,13 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/list")
     @ResponseBody
     public Object list(Customer customer) {
+        customer.setCreateUser(ShiroKit.getUserNotNull().getId());//只查自己做的
         Page<Map<String, Object>> list = this.customerService.list(customer);
         Page<Map<String, Object>> wrap = new CustomerWrapper(list).wrap();
         return LayuiPageFactory.createPageInfo(wrap);
     }
+
+
 
     /**
      * 新增客户
@@ -125,6 +173,7 @@ public class CustomerController extends BaseController {
         }
         customer.setCreateUser(ShiroKit.getUserNotNull().getId());
         customer.setCreateTime(new Date());
+        customer.setValid(1);
         this.customerService.save(customer);
         return SUCCESS_TIP;
     }
@@ -172,5 +221,17 @@ public class CustomerController extends BaseController {
         this.customerService.updateById(old);
         return SUCCESS_TIP;
     }
+
+
+    @RequestMapping(value = "/detail/{customerId}")
+    @Permission
+    @ResponseBody
+    public Object detail(@PathVariable("customerId") Long customerId) {
+        Customer customer = customerService.getById(customerId);
+        CustomerDto customerDto = new CustomerDto();
+        BeanUtil.copyProperties(customer, customerDto);
+        return customerDto;
+    }
+
 
 }

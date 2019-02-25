@@ -15,13 +15,8 @@
  */
 package cn.stylefeng.guns.modular.system.controller;
 
-import cn.stylefeng.guns.core.common.node.MenuNode;
-import cn.stylefeng.guns.core.log.LogManager;
-import cn.stylefeng.guns.core.log.factory.LogTaskFactory;
-import cn.stylefeng.guns.core.shiro.ShiroKit;
-import cn.stylefeng.guns.core.shiro.ShiroUser;
-import cn.stylefeng.guns.modular.system.service.UserService;
-import cn.stylefeng.roses.core.base.controller.BaseController;
+import java.util.List;
+
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +25,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.List;
-
+import cn.stylefeng.guns.core.common.node.MenuNode;
+import cn.stylefeng.guns.core.log.LogManager;
+import cn.stylefeng.guns.core.log.factory.LogTaskFactory;
+import cn.stylefeng.guns.core.shiro.ShiroKit;
+import cn.stylefeng.guns.core.shiro.ShiroUser;
+import cn.stylefeng.guns.modular.system.service.UserService;
+import cn.stylefeng.roses.core.base.controller.BaseController;
 import static cn.stylefeng.roses.core.util.HttpContext.getIp;
 
 /**
@@ -67,6 +67,7 @@ public class LoginController extends BaseController {
 
         List<MenuNode> menus = userService.getUserMenuNodes(roleList);
         model.addAttribute("menus", menus);
+        model.addAttribute("isAdmin", ShiroKit.isAdmin());
 
         return "/index.html";
     }

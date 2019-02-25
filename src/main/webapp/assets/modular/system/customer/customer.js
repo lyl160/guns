@@ -20,10 +20,12 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
         return [[
             {type: 'checkbox'},
             {field: 'customerId', hide: true, sort: true, title: 'id'},
-            {field: 'title', sort: true, title: '标题'},
-            {field: 'content', sort: true, title: '内容'},
-            {field: 'createrName', sort: true, title: '发布者'},
-            {field: 'createTime', sort: true, title: '创建时间'},
+            {field: 'name',width:'30%', sort: true, title: '公司名称'},
+            {field: 'contact',width:'10%', sort: true, title: '联系人'},
+            {field: 'contactTel',width:'11%', sort: true, title: '联系方式'},
+            {field: 'statusName', sort: true, title: '状态'},
+            {field: 'createrName', sort: true, title: '添加者'},
+            {field: 'createTime',width:'15%', sort: true, title: '创建时间'},
             {align: 'center', toolbar: '#tableBar', title: '操作', minWidth: 200}
         ]];
     };
@@ -39,13 +41,15 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
     };
 
     /**
-     * 弹出添加通知
+     * 弹出添加客户
      */
     Customer.openAddCustomer = function () {
         admin.putTempData('formOk', false);
         top.layui.admin.open({
             type: 2,
-            title: '添加通知',
+            area : ['800px', '300px'],
+            offset: '30px',
+            title: '添加客户',
             content: Feng.ctxPath + '/customer/customer_add',
             end: function () {
                 admin.getTempData('formOk') && table.reload(Customer.tableId);
@@ -54,7 +58,7 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
     };
 
     /**
-     * 点击编辑通知
+     * 点击编辑客户
      *
      * @param data 点击按钮时候的行数据
      */
@@ -62,8 +66,10 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
         admin.putTempData('formOk', false);
         top.layui.admin.open({
             type: 2,
-            title: '通知详情',
-            content: Feng.ctxPath + '/customer/customer_update/' + data.customerId,
+            area : ['800px', '300px'],
+            offset: '30px',
+            title: '修改客户',
+            content: Feng.ctxPath + '/customer/customer_update?customerId=' + data.customerId,
             end: function () {
                 admin.getTempData('formOk') && table.reload(Customer.tableId);
             }
@@ -71,7 +77,7 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
     };
 
     /**
-     * 点击删除通知
+     * 点击删除客户
      *
      * @param data 点击按钮时候的行数据
      */
@@ -86,7 +92,23 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
             ajax.set("customerId", data.customerId);
             ajax.start();
         };
-        Feng.confirm("是否删除通知 " + data.title + "?", operation);
+        Feng.confirm("是否删除客户 " + data.name + "?", operation);
+    };
+    /**
+     * 点击分享客户
+     *
+     * @param data 点击按钮时候的行数据
+     */
+    Customer.onShareCustomer = function (data) {
+        admin.putTempData('formOk', false);
+        top.layui.admin.open({
+            type: 2,
+            title: '分享客户',
+            content: Feng.ctxPath + '/customer/customer_share?customerId=' + data.customerId,
+            end: function () {
+                admin.getTempData('formOk') && table.reload(Customer.tableId);
+            }
+        });
     };
 
     // 渲染表格
@@ -118,6 +140,8 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
             Customer.onEditCustomer(data);
         } else if (layEvent === 'delete') {
             Customer.onDeleteCustomer(data);
+        } else if (layEvent === 'share') {
+            Customer.onShareCustomer(data);
         }
     });
 });

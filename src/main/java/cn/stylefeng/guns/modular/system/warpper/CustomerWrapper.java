@@ -52,5 +52,6 @@ public class CustomerWrapper extends BaseControllerWrapper {
     protected void wrapTheMap(Map<String, Object> map) {
         Long creater = (Long) map.get("createUser");
         map.put("createrName", ConstantFactory.me().getUserNameById(creater));
+        map.put("statusName", ConstantFactory.me().getCustomerStatusName((String) map.get("status")));
     }
 }

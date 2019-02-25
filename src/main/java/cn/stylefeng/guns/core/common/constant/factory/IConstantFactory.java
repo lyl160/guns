@@ -116,6 +116,8 @@ public interface IConstantFactory {
      */
     String getStatusName(String status);
 
+    String getCustomerStatusName(String status);
+
     /**
      * 获取菜单状态
      */

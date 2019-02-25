@@ -22,5 +22,8 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     /**
      * 获取通知列表
      */
-    Page<Map<String,Object>> list(@Param("page") Page page, @Param("name") String name, @Param("contactTel") String contactTel);
+    Page<Map<String,Object>> list(@Param("page") Page page, @Param("name") String name, @Param("contactTel") String contactTel, @Param("createUser") Long createUser);
+
+    int deleteShare(@Param("customerId") Long customerId, @Param("createUser")Long id);
+    int saveShare(@Param("customerId")Long customerId,  @Param("userId") Long userId, @Param("createUser")Long id);
 }

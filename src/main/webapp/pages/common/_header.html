@@ -23,7 +23,7 @@
         <li class="layui-nav-item" lay-unselect>
             <a>
                 <img src="${avatar!}" class="layui-nav-img">
-                <cite>管理员</cite>
+                <cite>${name!}</cite>
             </a>
             <dl class="layui-nav-child">
                 <dd lay-unselect>
@@ -38,7 +38,7 @@
                 </dd>
             </dl>
         </li>
-        <li class="layui-nav-item" lay-unselect>
+        <li class="layui-nav-item" style="display: none" lay-unselect>
             <a ew-event="theme" title="主题"><i class="layui-icon layui-icon-more-vertical"></i></a>
         </li>
     </ul>

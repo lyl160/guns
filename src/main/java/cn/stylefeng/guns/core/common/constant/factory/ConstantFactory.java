@@ -28,6 +28,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import cn.stylefeng.guns.core.common.constant.cache.Cache;
 import cn.stylefeng.guns.core.common.constant.cache.CacheKey;
+import cn.stylefeng.guns.core.common.constant.state.CustomerStatus;
 import cn.stylefeng.guns.core.common.constant.state.ManagerStatus;
 import cn.stylefeng.guns.core.common.constant.state.MenuStatus;
 import cn.stylefeng.guns.core.log.LogObjectHolder;
@@ -300,6 +301,11 @@ public class ConstantFactory implements IConstantFactory {
     @Override
     public String getStatusName(String status) {
         return ManagerStatus.getDescription(status);
+    }
+
+    @Override
+    public String getCustomerStatusName(String status) {
+        return CustomerStatus.getDescription(status);
     }
 
     @Override
