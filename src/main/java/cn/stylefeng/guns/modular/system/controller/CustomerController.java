@@ -104,8 +104,8 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/list")
     @ResponseBody
-    public Object list(String condition) {
-        Page<Map<String, Object>> list = this.customerService.list(condition);
+    public Object list(Customer customer) {
+        Page<Map<String, Object>> list = this.customerService.list(customer);
         Page<Map<String, Object>> wrap = new CustomerWrapper(list).wrap();
         return LayuiPageFactory.createPageInfo(wrap);
     }
@@ -118,7 +118,7 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/add")
     @ResponseBody
-    @BussinessLog(value = "新增客户", key = "title", dict = CustomerMap.class)
+    @BussinessLog(value = "新增客户", key = "name", dict = CustomerMap.class)
     public Object add(Customer customer) {
         if (ToolUtil.isOneEmpty(customer, customer.getName(), customer.getContact())) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
@@ -137,13 +137,17 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/delete")
     @ResponseBody
-    @BussinessLog(value = "删除客户", key = "CustomerId", dict = CustomerMap.class)
-    public Object delete(@RequestParam Long CustomerId) {
+    @BussinessLog(value = "删除客户", key = "customerId", dict = CustomerMap.class)
+    public Object delete(@RequestParam Long customerId) {
 
         //缓存客户名称
-        LogObjectHolder.me().set(ConstantFactory.me().getCustomerName(CustomerId));
+        LogObjectHolder.me().set(ConstantFactory.me().getCustomerName(customerId));
 
-        this.customerService.removeById(CustomerId);
+        //逻辑删除
+        Customer old = this.customerService.getById(customerId);
+        old.setValid(0);
+        this.customerService.updateById(old);
+        //this.customerService.removeById(customerId);
 
         return SUCCESS_TIP;
     }
@@ -156,7 +160,7 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/update")
     @ResponseBody
-    @BussinessLog(value = "修改客户", key = "title", dict = CustomerMap.class)
+    @BussinessLog(value = "修改客户", key = "name", dict = CustomerMap.class)
     public Object update(Customer customer) {
         if (ToolUtil.isOneEmpty(customer, customer.getCustomerId(), customer.getName(), customer.getContact())) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);

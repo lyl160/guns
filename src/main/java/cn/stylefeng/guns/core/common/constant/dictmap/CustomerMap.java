@@ -27,8 +27,14 @@ public class CustomerMap extends AbstractDictMap {
 
     @Override
     public void init() {
-        put("title", "标题");
-        put("content", "内容");
+        put("name", "公司名称");
+        put("contact", "联系人");
+        put("contactTel", "联系方式1");
+        put("contactTel2", "联系方式2");
+        put("contactTel3", "联系方式3");
+        put("content", "客户基本情况");
+        put("status", "跟进状态");
+        put("followContent", "跟进情况");
     }
 
     @Override

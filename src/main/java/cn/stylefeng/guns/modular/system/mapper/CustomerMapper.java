@@ -22,6 +22,5 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     /**
      * 获取通知列表
      */
-    Page<Map<String, Object>> list(@Param("page") Page page, @Param("condition") String condition);
-
+    Page<Map<String,Object>> list(@Param("page") Page page, @Param("name") String name, @Param("contactTel") String contactTel);
 }

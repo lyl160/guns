@@ -9,17 +9,17 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
     /**
      * 系统管理--消息管理
      */
-    var Notice = {
-        tableId: "noticeTable"    //表格id
+    var Customer = {
+        tableId: "customerTable"    //表格id
     };
 
     /**
      * 初始化表格的列
      */
-    Notice.initColumn = function () {
+    Customer.initColumn = function () {
         return [[
             {type: 'checkbox'},
-            {field: 'noticeId', hide: true, sort: true, title: 'id'},
+            {field: 'customerId', hide: true, sort: true, title: 'id'},
             {field: 'title', sort: true, title: '标题'},
             {field: 'content', sort: true, title: '内容'},
             {field: 'createrName', sort: true, title: '发布者'},
@@ -31,23 +31,24 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
     /**
      * 点击查询按钮
      */
-    Notice.search = function () {
+    Customer.search = function () {
         var queryData = {};
-        queryData['condition'] = $("#condition").val();
-        table.reload(Notice.tableId, {where: queryData});
+        queryData['name'] = $("#name").val();
+        queryData['contactTel'] = $("#contactTel").val();
+        table.reload(Customer.tableId, {where: queryData});
     };
 
     /**
      * 弹出添加通知
      */
-    Notice.openAddNotice = function () {
+    Customer.openAddCustomer = function () {
         admin.putTempData('formOk', false);
         top.layui.admin.open({
             type: 2,
             title: '添加通知',
-            content: Feng.ctxPath + '/notice/notice_add',
+            content: Feng.ctxPath + '/customer/customer_add',
             end: function () {
-                admin.getTempData('formOk') && table.reload(Notice.tableId);
+                admin.getTempData('formOk') && table.reload(Customer.tableId);
             }
         });
     };
@@ -57,14 +58,14 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
      *
      * @param data 点击按钮时候的行数据
      */
-    Notice.onEditNotice = function (data) {
+    Customer.onEditCustomer = function (data) {
         admin.putTempData('formOk', false);
         top.layui.admin.open({
             type: 2,
             title: '通知详情',
-            content: Feng.ctxPath + '/notice/notice_update/' + data.noticeId,
+            content: Feng.ctxPath + '/customer/customer_update/' + data.customerId,
             end: function () {
-                admin.getTempData('formOk') && table.reload(Notice.tableId);
+                admin.getTempData('formOk') && table.reload(Customer.tableId);
             }
         });
     };
@@ -74,15 +75,15 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
      *
      * @param data 点击按钮时候的行数据
      */
-    Notice.onDeleteNotice = function (data) {
+    Customer.onDeleteCustomer = function (data) {
         var operation = function () {
-            var ajax = new $ax(Feng.ctxPath + "/notice/delete", function (data) {
+            var ajax = new $ax(Feng.ctxPath + "/customer/delete", function (data) {
                 Feng.success("删除成功!");
-                table.reload(Notice.tableId);
+                table.reload(Customer.tableId);
             }, function (data) {
                 Feng.error("删除失败!" + data.responseJSON.message + "!");
             });
-            ajax.set("noticeId", data.noticeId);
+            ajax.set("customerId", data.customerId);
             ajax.start();
         };
         Feng.confirm("是否删除通知 " + data.title + "?", operation);
@@ -90,33 +91,33 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
 
     // 渲染表格
     var tableResult = table.render({
-        elem: '#' + Notice.tableId,
-        url: Feng.ctxPath + '/notice/list',
+        elem: '#' + Customer.tableId,
+        url: Feng.ctxPath + '/customer/list',
         page: true,
         height: "full-158",
         cellMinWidth: 100,
-        cols: Notice.initColumn()
+        cols: Customer.initColumn()
     });
 
     // 搜索按钮点击事件
     $('#btnSearch').click(function () {
-        Notice.search();
+        Customer.search();
     });
 
     // 添加按钮点击事件
     $('#btnAdd').click(function () {
-        Notice.openAddNotice();
+        Customer.openAddCustomer();
     });
 
     // 工具条点击事件
-    table.on('tool(' + Notice.tableId + ')', function (obj) {
+    table.on('tool(' + Customer.tableId + ')', function (obj) {
         var data = obj.data;
         var layEvent = obj.event;
 
         if (layEvent === 'edit') {
-            Notice.onEditNotice(data);
+            Customer.onEditCustomer(data);
         } else if (layEvent === 'delete') {
-            Notice.onDeleteNotice(data);
+            Customer.onDeleteCustomer(data);
         }
     });
 });

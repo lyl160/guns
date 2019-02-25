@@ -28,8 +28,8 @@ public class CustomerService extends ServiceImpl<CustomerMapper, Customer> {
      * @author fengshuonan
      * @Date 2018/12/23 6:05 PM
      */
-    public Page<Map<String, Object>> list(String condition) {
+    public Page<Map<String, Object>> list(Customer customer) {
         Page page = LayuiPageFactory.defaultPage();
-        return this.baseMapper.list(page, condition);
+        return this.baseMapper.list(page, customer.getName(),customer.getContactTel());
     }
 }

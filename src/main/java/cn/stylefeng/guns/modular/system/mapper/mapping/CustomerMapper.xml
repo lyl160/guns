@@ -31,8 +31,12 @@
         select
         <include refid="Base_Column_List"></include>
         from t_customer
-        <if test="condition != null and condition != ''">
-            where NAME like CONCAT('%',#{condition},'%') or CONTACT like CONCAT('%',#{condition},'%')
+        where valid=1
+        <if test="name != null and name != ''">
+            and (NAME like CONCAT('%',#{name},'%') or CONTACT like CONCAT('%',#{name},'%'))
+        </if>
+        <if test="contactTel != null and contactTel != ''">
+            and (CONTACT_TEL like CONCAT('%',#{contactTel},'%') or CONTACT_TEL2 like CONCAT('%',#{contactTel},'%') or CONTACT_TEL3 like CONCAT('%',#{contactTel},'%'))
         </if>
         order by CREATE_TIME DESC
     </select>
