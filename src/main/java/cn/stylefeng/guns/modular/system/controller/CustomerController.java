@@ -76,7 +76,7 @@ public class CustomerController extends BaseController {
      * @author fengshuonan
      * @Date 2018/12/23 6:06 PM
      */
-    @RequestMapping("/Customer_add")
+    @RequestMapping("/customer_add")
     public String CustomerAdd() {
         return PREFIX + "customer_add.html";
     }

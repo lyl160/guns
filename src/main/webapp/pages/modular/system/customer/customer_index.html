@@ -1,0 +1,7 @@
+@layout("/common/_container.html",{bg:"bg-white",title:"概览"}){
+<div style="padding: 20px;">
+    @for(customer in customerList){
+    <blockquote class="layui-elem-quote">${customer.content}</blockquote>
+    @}
+</div>
+@}
