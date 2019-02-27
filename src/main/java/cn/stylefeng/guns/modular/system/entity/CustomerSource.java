@@ -17,8 +17,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * @author stylefeng
  * @since 2018-12-07
  */
-@TableName("t_customer")
-public class Customer implements Serializable {
+@TableName("t_customer_source")
+public class CustomerSource implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,11 +32,6 @@ public class Customer implements Serializable {
      */
     @TableField("NAME")
     private String name;
-    /**
-     * 联系人
-     */
-    @TableField("CONTACT")
-    private String contact;
     /**
      * 联系方式
      */
@@ -52,29 +47,6 @@ public class Customer implements Serializable {
      */
     @TableField("CONTACT_TEL3")
     private String contactTel3;
-    /**
-     * 客户基本情况
-     */
-    @TableField("CONTENT")
-    private String content;
-    /**
-     * 参与项目，id用逗号隔开
-     */
-    @TableField("PROJECT_DICT")
-    private String projectDict;
-
-    /**
-     * 跟进状态(字典) 电话一试、二次沟通、约出见面
-     */
-    @TableField("STATUS")
-    private String status;
-
-    //办理的项目49种
-    /**
-     * 跟进情况
-     */
-    @TableField("FOLLOW_CONTENT")
-    private String followContent;
     /**
      * 创建时间
      */
@@ -116,13 +88,6 @@ public class Customer implements Serializable {
         this.name = name;
     }
 
-    public String getContact() {
-        return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
 
     public String getContactTel() {
         return contactTel;
@@ -148,29 +113,6 @@ public class Customer implements Serializable {
         this.contactTel3 = contactTel3;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getFollowContent() {
-        return followContent;
-    }
-
-    public void setFollowContent(String followContent) {
-        this.followContent = followContent;
-    }
 
     public Date getCreateTime() {
         return createTime;
@@ -213,31 +155,5 @@ public class Customer implements Serializable {
     }
 
 
-    public String getProjectDict() {
-        return projectDict;
-    }
 
-    public void setProjectDict(String projectDict) {
-        this.projectDict = projectDict;
-    }
-
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "customerId=" + customerId +
-                ", name='" + name + '\'' +
-                ", contact='" + contact + '\'' +
-                ", contactTel='" + contactTel + '\'' +
-                ", contactTel2='" + contactTel2 + '\'' +
-                ", contactTel3='" + contactTel3 + '\'' +
-                ", content='" + content + '\'' +
-                ", status='" + status + '\'' +
-                ", followContent='" + followContent + '\'' +
-                ", createTime=" + createTime +
-                ", createUser=" + createUser +
-                ", updateTime=" + updateTime +
-                ", updateUser=" + updateUser +
-                ", valid=" + valid +
-                '}';
-    }
 }

@@ -15,7 +15,7 @@ layui.use(['layer', 'form', 'admin', 'ax'], function () {
         });
         data.field.userIdList = userIdList.join(",");//将数组合并成字符串
 
-        var ajax = new $ax(Feng.ctxPath + "/customer/share", function (data) {
+        var ajax = new $ax(Feng.ctxPath + "/customerSource/share", function (data) {
             Feng.success("添加成功！");
 
             //传给上个页面，刷新table用

@@ -1,0 +1,43 @@
+@layout("/common/_container.html",{plugins:["ztree"],js:["/assets/modular/system/customerSource/source.js"]}){
+
+<div class="layui-body-header">
+    <span class="layui-body-header-title">客户管理</span>
+    <input id="currentUserId" value="${currentUserId}">
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input id="name" class="layui-input" type="text" placeholder="公司名称"/>
+                            </div>
+                            <div class="layui-inline">
+                                <input id="contactTel" class="layui-input" type="text" placeholder="联系方式"/>
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+                                <button id="btnImport" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>导入</button>
+                                <button id="btnShare" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>分配</button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="layui-table" id="customerTable" lay-filter="customerTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="tableBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    {{# if(d.createUser == ${currentUserId}){ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="share">分享</a>
+    {{# } }}
+</script>
+
+@}

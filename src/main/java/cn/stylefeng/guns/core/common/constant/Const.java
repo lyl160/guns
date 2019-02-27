@@ -15,9 +15,9 @@
  */
 package cn.stylefeng.guns.core.common.constant;
 
-import cn.hutool.core.collection.CollectionUtil;
-
 import java.util.List;
+
+import cn.hutool.core.collection.CollectionUtil;
 
 /**
  * 系统常量
@@ -36,6 +36,10 @@ public interface Const {
      * 管理员角色的名字
      */
     String ADMIN_NAME = "administrator";
+    /**
+     * 查询员角色的名字
+     */
+    String ADMIN_QUERY = "query";
 
     /**
      * 管理员id

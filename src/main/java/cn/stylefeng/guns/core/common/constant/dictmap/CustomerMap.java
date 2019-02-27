@@ -32,6 +32,7 @@ public class CustomerMap extends AbstractDictMap {
         put("contactTel", "联系方式1");
         put("contactTel2", "联系方式2");
         put("contactTel3", "联系方式3");
+        put("projectDict", "参与项目");
         put("content", "客户基本情况");
         put("status", "跟进状态");
         put("followContent", "跟进情况");

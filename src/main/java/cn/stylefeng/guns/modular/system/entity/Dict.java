@@ -1,9 +1,13 @@
 package cn.stylefeng.guns.modular.system.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
 /**
  * <p>
@@ -18,6 +22,7 @@ public class Dict implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String CODE_PROJECT_TYPE = "PROJECT_TYPE";
     /**
      * 主键id
      */
@@ -69,6 +74,16 @@ public class Dict implements Serializable {
     @TableField(value = "UPDATE_USER", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+    @TableField(exist=false)
+    private int checkbox;
+
+    public int getCheckbox() {
+        return checkbox;
+    }
+
+    public void setCheckbox(int checkbox) {
+        this.checkbox = checkbox;
+    }
 
     public Long getDictId() {
         return dictId;

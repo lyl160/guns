@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.stylefeng.guns.modular.system.mapper.CustomerSourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.stylefeng.guns.modular.system.entity.CustomerSource">
+        <id column="CUSTOMER_ID" property="customerId" />
+        <result column="NAME" property="name" />
+        <result column="CONTACT_TEL" property="contactTel" />
+        <result column="CONTACT_TEL2" property="contactTel2" />
+        <result column="CONTACT_TEL3" property="contactTel3" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="VALID" jdbcType="INTEGER" property="valid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        CUSTOMER_ID AS customerId, NAME AS name, valid,
+        CONTACT_TEL AS contactTel, CONTACT_TEL2 AS contactTel2, CONTACT_TEL3 AS contactTel3,
+        CREATE_TIME AS createTime, CREATE_USER AS createUser, UPDATE_TIME AS updateTime, UPDATE_USER AS updateUser
+    </sql>
+
+
+    <select id="list" resultType="map">
+        select
+        <include refid="Base_Column_List"></include>
+        from t_customer_source
+        where valid=1
+        <if test="name != null and name != ''">
+            and (NAME like CONCAT('%',#{name},'%') )
+        </if>
+        <if test="createUser != null and createUser != ''">
+            and (CREATE_USER = #{createUser}  or CUSTOMER_ID in (select CUSTOMER_ID from t_customer_source_user where valid=1 and USER_ID = #{createUser}))
+        </if>
+        <if test="contactTel != null and contactTel != ''">
+            and (CONTACT_TEL like CONCAT('%',#{contactTel},'%') or CONTACT_TEL2 like CONCAT('%',#{contactTel},'%') or CONTACT_TEL3 like CONCAT('%',#{contactTel},'%'))
+        </if>
+        order by CREATE_TIME DESC
+    </select>
+
+    <insert id="saveShare">
+        INSERT INTO t_customer_source_user( `CUSTOMER_ID`, `USER_ID`, `CREATE_TIME`, `CREATE_USER`, `UPDATE_TIME`, `UPDATE_USER`, `VALID`)
+        VALUES ( #{customerId}, #{userId}, NOW(), #{createUser}, null, null, 1)
+    </insert>
+    <update id="deleteShare" parameterType="Long">
+        update t_customer_source_user set  valid =0,UPDATE_USER=#{createUser},UPDATE_TIME=NOW()  where CUSTOMER_ID = #{customerId}
+    </update>
+</mapper>

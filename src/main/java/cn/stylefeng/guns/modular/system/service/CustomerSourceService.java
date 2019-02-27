@@ -12,8 +12,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import cn.stylefeng.guns.core.common.page.LayuiPageFactory;
 import cn.stylefeng.guns.core.shiro.ShiroKit;
-import cn.stylefeng.guns.modular.system.entity.Customer;
-import cn.stylefeng.guns.modular.system.mapper.CustomerMapper;
+import cn.stylefeng.guns.modular.system.entity.CustomerSource;
+import cn.stylefeng.guns.modular.system.mapper.CustomerSourceMapper;
 
 /**
  * <p>
@@ -24,7 +24,7 @@ import cn.stylefeng.guns.modular.system.mapper.CustomerMapper;
  * @since 2018-12-07
  */
 @Service
-public class CustomerService extends ServiceImpl<CustomerMapper, Customer> {
+public class CustomerSourceService extends ServiceImpl<CustomerSourceMapper, CustomerSource> {
 
     /**
      * 获取通知列表
@@ -32,18 +32,23 @@ public class CustomerService extends ServiceImpl<CustomerMapper, Customer> {
      * @author fengshuonan
      * @Date 2018/12/23 6:05 PM
      */
-    public Page<Map<String, Object>> list(Customer customer) {
+    public Page<Map<String, Object>> list(CustomerSource customer) {
         Page page = LayuiPageFactory.defaultPage();
         return this.baseMapper.list(page, customer.getName(),customer.getContactTel(),customer.getCreateUser());
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveShare(Long customerId, String userIdList) {
-        this.baseMapper.deleteShare(customerId, ShiroKit.getUserNotNull().getId());
-        if (!StringUtils.isEmpty(userIdList)) {
-            Arrays.asList(userIdList.split(",")).stream().forEach(userId -> {
-                this.baseMapper.saveShare(customerId, Long.parseLong(userId), ShiroKit.getUserNotNull().getId());
+    public void saveShare(String customerIdList, String userIdList) {
+        if (!StringUtils.isEmpty(customerIdList)) {
+            Arrays.asList(customerIdList.split(",")).stream().forEach(customerId -> {
+                this.baseMapper.deleteShare(Long.parseLong(customerId), ShiroKit.getUserNotNull().getId());
+                if (!StringUtils.isEmpty(userIdList)) {
+                    Arrays.asList(userIdList.split(",")).stream().forEach(userId -> {
+                        this.baseMapper.saveShare(Long.parseLong(customerId), Long.parseLong(userId), ShiroKit.getUserNotNull().getId());
+                    });
+                }
             });
         }
+
     }
 }

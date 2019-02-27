@@ -15,6 +15,7 @@
  */
 package cn.stylefeng.guns.modular.system.controller;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,16 +25,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.core.common.annotion.BussinessLog;
-import cn.stylefeng.guns.core.common.annotion.Permission;
 import cn.stylefeng.guns.core.common.constant.dictmap.CustomerMap;
 import cn.stylefeng.guns.core.common.constant.factory.ConstantFactory;
 import cn.stylefeng.guns.core.common.exception.BizExceptionEnum;
@@ -41,9 +41,10 @@ import cn.stylefeng.guns.core.common.page.LayuiPageFactory;
 import cn.stylefeng.guns.core.log.LogObjectHolder;
 import cn.stylefeng.guns.core.shiro.ShiroKit;
 import cn.stylefeng.guns.modular.system.entity.Customer;
+import cn.stylefeng.guns.modular.system.entity.Dict;
 import cn.stylefeng.guns.modular.system.entity.User;
-import cn.stylefeng.guns.modular.system.model.CustomerDto;
 import cn.stylefeng.guns.modular.system.service.CustomerService;
+import cn.stylefeng.guns.modular.system.service.DictService;
 import cn.stylefeng.guns.modular.system.service.UserService;
 import cn.stylefeng.guns.modular.system.warpper.CustomerWrapper;
 import cn.stylefeng.roses.core.base.controller.BaseController;
@@ -66,6 +67,8 @@ public class CustomerController extends BaseController {
     private CustomerService customerService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private DictService dictService;
 
     /**
      * 跳转到客户列表首页
@@ -86,7 +89,8 @@ public class CustomerController extends BaseController {
      * @Date 2018/12/23 6:06 PM
      */
     @RequestMapping("/customer_add")
-    public String CustomerAdd() {
+    public String CustomerAdd(Model model) {
+        model.addAttribute("projectList", dictService.selectByParentCode(Dict.CODE_PROJECT_TYPE));
         return PREFIX + "customer_add.html";
     }
 
@@ -100,6 +104,19 @@ public class CustomerController extends BaseController {
     public String CustomerUpdate(@RequestParam Long customerId, Model model) {
         Customer customer = this.customerService.getById(customerId);
         model.addAllAttributes(BeanUtil.beanToMap(customer));
+        List<Dict> dictList = dictService.selectByParentCode(Dict.CODE_PROJECT_TYPE);
+        model.addAttribute("projectList", dictList);
+        if (!StringUtils.isEmpty(customer.getProjectDict())) {
+            List<String> customerDictList = Arrays.asList(customer.getProjectDict().split(","));
+            dictList.stream().forEach(d ->{
+                boolean isExist =!customerDictList.stream().filter(cd -> cd.equals(d.getDictId().toString())).collect(Collectors.toList()).isEmpty();
+                if (isExist) {
+                    d.setCheckbox(1);
+                } else {
+                    d.setCheckbox(0);
+                }
+            });
+        }
         LogObjectHolder.me().set(customer);
         return PREFIX + "customer_edit.html";
     }
@@ -132,7 +149,7 @@ public class CustomerController extends BaseController {
     @RequestMapping("/share")
     @ResponseBody
     public Object share(Customer customer,@RequestParam(name = "userIdList", required = false) String userIdList, Model model) {
-        if (ToolUtil.isOneEmpty(customer.getCustomerId(), userIdList)) {
+        if (ToolUtil.isOneEmpty(customer.getCustomerId())) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }
         customerService.saveShare(customer.getCustomerId(), userIdList);
@@ -150,7 +167,10 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/list")
     @ResponseBody
     public Object list(Customer customer) {
-        customer.setCreateUser(ShiroKit.getUserNotNull().getId());//只查自己做的
+        if (ShiroKit.isQueryer() || ShiroKit.isAdmin()) {
+        } else {
+            customer.setCreateUser(ShiroKit.getUserNotNull().getId());//只查自己做的
+        }
         Page<Map<String, Object>> list = this.customerService.list(customer);
         Page<Map<String, Object>> wrap = new CustomerWrapper(list).wrap();
         return LayuiPageFactory.createPageInfo(wrap);
@@ -221,17 +241,5 @@ public class CustomerController extends BaseController {
         this.customerService.updateById(old);
         return SUCCESS_TIP;
     }
-
-
-    @RequestMapping(value = "/detail/{customerId}")
-    @Permission
-    @ResponseBody
-    public Object detail(@PathVariable("customerId") Long customerId) {
-        Customer customer = customerService.getById(customerId);
-        CustomerDto customerDto = new CustomerDto();
-        BeanUtil.copyProperties(customer, customerDto);
-        return customerDto;
-    }
-
 
 }

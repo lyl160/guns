@@ -4,12 +4,17 @@ layui.use(['layer', 'form', 'admin', 'ax'], function () {
     var form = layui.form;
     var admin = layui.admin;
     var layer = layui.layer;
-
     // 让当前iframe弹层高度适应
     admin.iframeAuto();
 
+
     // 表单提交事件
     form.on('submit(btnSubmit)', function (data) {
+        var dictIdList = new Array();
+        $("input:checkbox[name='dictId']:checked").each(function(i){
+            dictIdList[i] = $(this).val();
+        });
+        data.field.projectDict = dictIdList.join(",");//将数组合并成字符串
         var ajax = new $ax(Feng.ctxPath + "/customer/add", function (data) {
             Feng.success("添加成功！");
 
