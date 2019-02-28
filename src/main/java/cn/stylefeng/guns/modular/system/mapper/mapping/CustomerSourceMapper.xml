@@ -13,13 +13,14 @@
         <result column="CREATE_USER" property="createUser" />
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="UPDATE_USER" property="updateUser" />
+        <result column="USER_NAME" property="userName" />
         <result column="VALID" jdbcType="INTEGER" property="valid" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         CUSTOMER_ID AS customerId, NAME AS name, valid,
-        CONTACT_TEL AS contactTel, CONTACT_TEL2 AS contactTel2, CONTACT_TEL3 AS contactTel3,
+        CONTACT_TEL AS contactTel, CONTACT_TEL2 AS contactTel2, CONTACT_TEL3 AS contactTel3,USER_NAME AS userName,
         CREATE_TIME AS createTime, CREATE_USER AS createUser, UPDATE_TIME AS updateTime, UPDATE_USER AS updateUser
     </sql>
 
@@ -27,18 +28,30 @@
     <select id="list" resultType="map">
         select
         <include refid="Base_Column_List"></include>
-        from t_customer_source
+        from t_customer_source cs
+        left join (
+            SELECT
+                c.CUSTOMER_ID CUSTOMER_ID_U,
+                group_concat( u.`NAME` ) USER_NAME
+            FROM
+                t_customer_source_user c,
+                sys_user u
+            WHERE
+              u.USER_ID = c.USER_ID and  c.valid = 1
+            GROUP BY
+                c.CUSTOMER_ID
+        ) t on cs.CUSTOMER_ID = t.CUSTOMER_ID_U
         where valid=1
         <if test="name != null and name != ''">
-            and (NAME like CONCAT('%',#{name},'%') )
+            and (cs.NAME like CONCAT('%',#{name},'%') )
         </if>
         <if test="createUser != null and createUser != ''">
-            and (CREATE_USER = #{createUser}  or CUSTOMER_ID in (select CUSTOMER_ID from t_customer_source_user where valid=1 and USER_ID = #{createUser}))
+            and (cs.CREATE_USER = #{createUser}  or cs.CUSTOMER_ID in (select CUSTOMER_ID from t_customer_source_user where valid=1 and USER_ID = #{createUser}))
         </if>
         <if test="contactTel != null and contactTel != ''">
-            and (CONTACT_TEL like CONCAT('%',#{contactTel},'%') or CONTACT_TEL2 like CONCAT('%',#{contactTel},'%') or CONTACT_TEL3 like CONCAT('%',#{contactTel},'%'))
+            and (cs.CONTACT_TEL like CONCAT('%',#{contactTel},'%') or cs.CONTACT_TEL2 like CONCAT('%',#{contactTel},'%') or cs.CONTACT_TEL3 like CONCAT('%',#{contactTel},'%'))
         </if>
-        order by CREATE_TIME DESC
+        order by cs.CREATE_TIME DESC
     </select>
 
     <insert id="saveShare">
@@ -47,5 +60,13 @@
     </insert>
     <update id="deleteShare" parameterType="Long">
         update t_customer_source_user set  valid =0,UPDATE_USER=#{createUser},UPDATE_TIME=NOW()  where CUSTOMER_ID = #{customerId}
+    </update>
+
+    <update id="deleteRepeat">
+        UPDATE
+            t_customer_source t
+            SET t.valid = 0
+            WHERE
+                t.customer_id IN ( select s.id from (SELECT min( customer_id ) id FROM t_customer_source  WHERE valid = 1 GROUP BY NAME HAVING count( NAME ) > 1) s );
     </update>
 </mapper>

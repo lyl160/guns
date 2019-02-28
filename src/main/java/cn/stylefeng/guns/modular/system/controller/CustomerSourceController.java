@@ -15,28 +15,40 @@
  */
 package cn.stylefeng.guns.modular.system.controller;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.stylefeng.guns.core.common.exception.BizExceptionEnum;
 import cn.stylefeng.guns.core.common.page.LayuiPageFactory;
 import cn.stylefeng.guns.core.shiro.ShiroKit;
 import cn.stylefeng.guns.modular.system.entity.CustomerSource;
 import cn.stylefeng.guns.modular.system.entity.User;
+import cn.stylefeng.guns.modular.system.model.CustomerSourceTemplate;
 import cn.stylefeng.guns.modular.system.service.CustomerSourceService;
 import cn.stylefeng.guns.modular.system.service.UserService;
 import cn.stylefeng.guns.modular.system.warpper.CustomerWrapper;
 import cn.stylefeng.roses.core.base.controller.BaseController;
+import cn.stylefeng.roses.core.reqres.response.ErrorResponseData;
 import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 
@@ -66,6 +78,7 @@ public class CustomerSourceController extends BaseController {
     @RequestMapping("")
     public String index(Model model) {
         model.addAttribute("currentUserId", ShiroKit.getUserNotNull().getId());
+        model.addAttribute("canImport", ShiroKit.isQueryer() || ShiroKit.isAdmin());
         return PREFIX + "source.html";
     }
 
@@ -91,8 +104,45 @@ public class CustomerSourceController extends BaseController {
         return PREFIX + "source_share.html";
     }
 
+    @RequestMapping("/import")
+    @ResponseBody
+    public Object uploadImport(@RequestParam MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // 判断文件名是否为空
+        if (file == null)
+            throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
+        Map<String, Object> map = new HashMap<String, Object>();
+        // 获取文件名
+        String name = file.getOriginalFilename();
+        // 判断文件大小、即名称
+        long size = file.getSize();
+        if (name == null || ("").equals(name) && size == 0)
+            throw new ServiceException(BizExceptionEnum.FILE_ERROR);
+        List<CustomerSourceTemplate> dataList = ExcelImportUtil.importExcel(file.getInputStream(), CustomerSourceTemplate.class,
+                new ImportParams());
+        if (CollectionUtils.isNotEmpty(dataList)) {
+            dataList = dataList.stream().filter(t -> StringUtils.isNotEmpty(t.getName()) && StringUtils.isNotEmpty(t.getContactTel())).collect(Collectors.toList());
+            //自身按名称去重
+            List<CustomerSourceTemplate> dataListWithoutRepeat = new LinkedList<>();
+            for (CustomerSourceTemplate t : dataList) {
+                boolean b = dataListWithoutRepeat.stream().anyMatch(u -> u.getName().equals(t.getName()));
+                if (!b) {
+                    dataListWithoutRepeat.add(t);
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(dataListWithoutRepeat)) {
+                customerSourceService.saveImport(dataListWithoutRepeat);
+            } else {
+                return new ErrorResponseData("表格无数据");
+            }
+        } else {
+            return new ErrorResponseData("表格无数据");
+        }
+        return SUCCESS_TIP;
+    }
+
     /**
-     * 跳转到修改客户
+     * 页面分享客户
      *
      * @author fengshuonan
      * @Date 2018/12/23 6:06 PM
@@ -126,6 +176,7 @@ public class CustomerSourceController extends BaseController {
         Page<Map<String, Object>> wrap = new CustomerWrapper(list).wrap();
         return LayuiPageFactory.createPageInfo(wrap);
     }
+
 
 
 

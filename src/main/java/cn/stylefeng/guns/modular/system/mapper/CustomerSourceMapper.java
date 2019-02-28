@@ -26,4 +26,7 @@ public interface CustomerSourceMapper extends BaseMapper<CustomerSource> {
 
     int deleteShare(@Param("customerId") Long customerId, @Param("createUser") Long id);
     int saveShare(@Param("customerId") Long customerId, @Param("userId") Long userId, @Param("createUser") Long id);
+
+    //客户来源去重，删除旧的留下新的
+    int deleteRepeat();
 }

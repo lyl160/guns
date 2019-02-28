@@ -24,6 +24,7 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
             {field: 'contactTel',width:'11%', sort: true, title: '联系方式'},
             {field: 'contactTel2',width:'11%', sort: true, title: '联系方式2'},
             {field: 'contactTel3',width:'11%', sort: true, title: '联系方式3'},
+            {field: 'userName', sort: true, title: '分配'},
             {field: 'createrName', sort: true, title: '添加者'},
             {field: 'createTime',width:'15%', sort: true, title: '创建时间'}
             // {align: 'center', toolbar: '#tableBar', title: '操作', minWidth: 200}
@@ -79,6 +80,7 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
         top.layui.admin.open({
             type: 2,
             title: '导入客户来源',
+            area : ['500px', '200px'],
             content: Feng.ctxPath + '/customerSource/customer_import',
             end: function () {
                 admin.getTempData('formOk') && table.reload(Customer.tableId);
@@ -104,6 +106,10 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
     // 添加按钮点击事件
     $('#btnShare').click(function () {
         Customer.openShareCustomer();
+    });
+    // 添加按钮点击事件
+    $('#btnImport').click(function () {
+        Customer.onImport();
     });
 
     // 工具条点击事件

@@ -17,36 +17,22 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * @author stylefeng
  * @since 2018-12-07
  */
-@TableName("t_customer_source")
-public class CustomerSource implements Serializable {
+@TableName("t_customer_source_user")
+public class CustomerSourceUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键
      */
-    @TableId(value = "CUSTOMER_ID", type = IdType.ID_WORKER)
+    @TableId(value = "ID", type = IdType.ID_WORKER)
+    private Long id;
+
+
+    @TableField(value = "CUSTOMER_ID", fill = FieldFill.INSERT)
     private Long customerId;
-    /**
-     * 公司名称
-     */
-    @TableField("NAME")
-    private String name;
-    /**
-     * 联系方式
-     */
-    @TableField("CONTACT_TEL")
-    private String contactTel;
-    /**
-     * 联系方式
-     */
-    @TableField("CONTACT_TEL2")
-    private String contactTel2;
-    /**
-     * 联系方式
-     */
-    @TableField("CONTACT_TEL3")
-    private String contactTel3;
+    @TableField(value = "USER_ID", fill = FieldFill.INSERT)
+    private Long userId;
     /**
      * 创建时间
      */
@@ -71,9 +57,6 @@ public class CustomerSource implements Serializable {
     @TableField(value = "VALID", fill = FieldFill.INSERT)
     private Integer valid;
 
-    @TableField(exist = false)
-    private String userName;
-
 
     public Long getCustomerId() {
         return customerId;
@@ -83,39 +66,13 @@ public class CustomerSource implements Serializable {
         this.customerId = customerId;
     }
 
-    public String getName() {
-        return name;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
-
-
-    public String getContactTel() {
-        return contactTel;
-    }
-
-    public void setContactTel(String contactTel) {
-        this.contactTel = contactTel;
-    }
-
-    public String getContactTel2() {
-        return contactTel2;
-    }
-
-    public void setContactTel2(String contactTel2) {
-        this.contactTel2 = contactTel2;
-    }
-
-    public String getContactTel3() {
-        return contactTel3;
-    }
-
-    public void setContactTel3(String contactTel3) {
-        this.contactTel3 = contactTel3;
-    }
-
 
     public Date getCreateTime() {
         return createTime;
@@ -155,13 +112,5 @@ public class CustomerSource implements Serializable {
 
     public void setValid(Integer valid) {
         this.valid = valid;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 }

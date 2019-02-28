@@ -13,6 +13,8 @@ beetl:
   resource-auto-check: true         #热加载beetl模板，开发时候用
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   profiles:
     active: @spring.active@
   mvc:

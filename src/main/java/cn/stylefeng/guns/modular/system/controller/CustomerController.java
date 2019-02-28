@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,6 +35,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.core.common.annotion.BussinessLog;
+import cn.stylefeng.guns.core.common.annotion.Permission;
 import cn.stylefeng.guns.core.common.constant.dictmap.CustomerMap;
 import cn.stylefeng.guns.core.common.constant.factory.ConstantFactory;
 import cn.stylefeng.guns.core.common.exception.BizExceptionEnum;
@@ -43,6 +45,7 @@ import cn.stylefeng.guns.core.shiro.ShiroKit;
 import cn.stylefeng.guns.modular.system.entity.Customer;
 import cn.stylefeng.guns.modular.system.entity.Dict;
 import cn.stylefeng.guns.modular.system.entity.User;
+import cn.stylefeng.guns.modular.system.model.CustomerDto;
 import cn.stylefeng.guns.modular.system.service.CustomerService;
 import cn.stylefeng.guns.modular.system.service.DictService;
 import cn.stylefeng.guns.modular.system.service.UserService;
@@ -240,6 +243,16 @@ public class CustomerController extends BaseController {
         old.setUpdateUser(ShiroKit.getUserNotNull().getId());
         this.customerService.updateById(old);
         return SUCCESS_TIP;
+    }
+
+    @RequestMapping(value = "/detail/{customerId}")
+    @Permission
+    @ResponseBody
+    public Object detail(@PathVariable("customerId") Long customerId) {
+        Customer customer = customerService.getById(customerId);
+        CustomerDto customerDto = new CustomerDto();
+        BeanUtil.copyProperties(customer, customerDto);
+        return customerDto;
     }
 
 }

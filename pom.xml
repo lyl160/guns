@@ -32,6 +32,7 @@
         <ehcache.core.version>2.6.11</ehcache.core.version>
         <mysql-connector-java.version>8.0.11</mysql-connector-java.version>
         <jwt.version>0.9.0</jwt.version>
+        <easypoi.version>3.2.0</easypoi.version>
     </properties>
 
     <dependencies>
@@ -168,6 +169,13 @@
         <!--<groupId>org.springframework.boot</groupId>-->
         <!--<artifactId>spring-boot-starter-data-redis</artifactId>-->
         <!--</dependency>-->
+
+        <!-- easy poi -->
+        <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-spring-boot-starter</artifactId>
+            <version>3.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>

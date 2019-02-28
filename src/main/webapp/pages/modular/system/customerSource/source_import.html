@@ -1,0 +1,15 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modular/system/customerSource/source_import.js"]}){
+<form id="customerForm" lay-filter="customerForm" class="layui-form model-form">
+    <div class="layui-form-item">
+        <div class="layui-col-xs10">
+            <label class="layui-form-label">Excel上传</label>
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" id="uploadExcel"><i class="layui-icon"></i>上传文件</button>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">关闭</button>
+    </div>
+</form>
+@}
