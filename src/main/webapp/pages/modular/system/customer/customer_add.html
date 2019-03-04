@@ -40,7 +40,13 @@
             <label class="layui-form-label">参与项目</label>
             <div class="layui-input-block">
                 @for(p in projectList){
+                    @if(strutil.length(p.name) <= 8 ){
+                        <div class="layui-col-xs3" >
+                   @}else{
+                        <div class="layui-col-xs5" >
+                    @}
                 <input type="checkbox" name="dictId" value="${p.dictId}" title="${p.name}">
+                </div>
                 @}
             </div>
         </div>

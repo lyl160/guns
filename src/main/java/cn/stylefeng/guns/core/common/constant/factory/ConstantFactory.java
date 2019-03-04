@@ -33,6 +33,7 @@ import cn.stylefeng.guns.core.common.constant.state.ManagerStatus;
 import cn.stylefeng.guns.core.common.constant.state.MenuStatus;
 import cn.stylefeng.guns.core.log.LogObjectHolder;
 import cn.stylefeng.guns.modular.system.entity.Customer;
+import cn.stylefeng.guns.modular.system.entity.CustomerSource;
 import cn.stylefeng.guns.modular.system.entity.Dept;
 import cn.stylefeng.guns.modular.system.entity.Dict;
 import cn.stylefeng.guns.modular.system.entity.Menu;
@@ -40,6 +41,7 @@ import cn.stylefeng.guns.modular.system.entity.Notice;
 import cn.stylefeng.guns.modular.system.entity.Role;
 import cn.stylefeng.guns.modular.system.entity.User;
 import cn.stylefeng.guns.modular.system.mapper.CustomerMapper;
+import cn.stylefeng.guns.modular.system.mapper.CustomerSourceMapper;
 import cn.stylefeng.guns.modular.system.mapper.DeptMapper;
 import cn.stylefeng.guns.modular.system.mapper.DictMapper;
 import cn.stylefeng.guns.modular.system.mapper.MenuMapper;
@@ -66,6 +68,7 @@ public class ConstantFactory implements IConstantFactory {
     private MenuMapper menuMapper = SpringContextHolder.getBean(MenuMapper.class);
     private NoticeMapper noticeMapper = SpringContextHolder.getBean(NoticeMapper.class);
     private CustomerMapper customerMapper = SpringContextHolder.getBean(CustomerMapper.class);
+    private CustomerSourceMapper customerSourceMapper = SpringContextHolder.getBean(CustomerSourceMapper.class);
 
     public static IConstantFactory me() {
         return SpringContextHolder.getBean("constantFactory");
@@ -264,6 +267,19 @@ public class ConstantFactory implements IConstantFactory {
             return "";
         } else {
             Customer customer = customerMapper.selectById(dictId);
+            if (customer == null) {
+                return "";
+            } else {
+                return customer.getName();
+            }
+        }
+    }
+    @Override
+    public String getCustomerSourceName(Long dictId) {
+        if (ToolUtil.isEmpty(dictId)) {
+            return "";
+        } else {
+            CustomerSource customer = customerSourceMapper.selectById(dictId);
             if (customer == null) {
                 return "";
             } else {

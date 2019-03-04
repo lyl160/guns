@@ -26,8 +26,8 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
             {field: 'contactTel3',width:'11%', sort: true, title: '联系方式3'},
             {field: 'userName', sort: true, title: '分配'},
             {field: 'createrName', sort: true, title: '添加者'},
-            {field: 'createTime',width:'15%', sort: true, title: '创建时间'}
-            // {align: 'center', toolbar: '#tableBar', title: '操作', minWidth: 200}
+            {field: 'createTime',width:'15%', sort: true, title: '创建时间'},
+            {align: 'center', toolbar: '#tableBar', title: '操作', minWidth: 50}
         ]];
     };
 
@@ -88,6 +88,25 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
         });
     };
 
+    /**
+     * 点击删除客户
+     *
+     * @param data 点击按钮时候的行数据
+     */
+    Customer.onDeleteCustomer = function (data) {
+        var operation = function () {
+            var ajax = new $ax(Feng.ctxPath + "/customerSource/delete", function (data) {
+                Feng.success("删除成功!");
+                table.reload(Customer.tableId);
+            }, function (data) {
+                Feng.error("删除失败!" + data.responseJSON.message + "!");
+            });
+            ajax.set("customerId", data.customerId);
+            ajax.start();
+        };
+        Feng.confirm("是否删除客户来源 " + data.name + "?", operation);
+    };
+
     // 渲染表格
     var tableResult = table.render({
         elem: '#' + Customer.tableId,
@@ -117,8 +136,8 @@ layui.use(['layer', 'form', 'table', 'admin', 'ax'], function () {
         var data = obj.data;
         var layEvent = obj.event;
 
-        // if (layEvent === 'dettail') {
-        //     Customer.onEditCustomer(data);
-        // }
+        if (layEvent === 'delete') {
+            Customer.onDeleteCustomer(data);
+        }
     });
 });

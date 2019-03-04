@@ -101,6 +101,8 @@ public interface IConstantFactory {
 
     String getCustomerName(Long dictId);
 
+    String getCustomerSourceName(Long dictId);
+
     /**
      * 根据字典名称和字典中的值获取对应的名称
      */

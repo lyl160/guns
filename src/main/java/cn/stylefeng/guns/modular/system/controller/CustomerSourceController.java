@@ -38,8 +38,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
+import cn.stylefeng.guns.core.common.annotion.BussinessLog;
+import cn.stylefeng.guns.core.common.constant.dictmap.CustomerMap;
+import cn.stylefeng.guns.core.common.constant.factory.ConstantFactory;
+import cn.stylefeng.guns.core.common.constant.state.ManagerStatus;
 import cn.stylefeng.guns.core.common.exception.BizExceptionEnum;
 import cn.stylefeng.guns.core.common.page.LayuiPageFactory;
+import cn.stylefeng.guns.core.log.LogObjectHolder;
 import cn.stylefeng.guns.core.shiro.ShiroKit;
 import cn.stylefeng.guns.modular.system.entity.CustomerSource;
 import cn.stylefeng.guns.modular.system.entity.User;
@@ -97,7 +102,7 @@ public class CustomerSourceController extends BaseController {
     public String CustomerShare(@RequestParam String customerIdList, Model model) {
         List<User> userList = userService.list();
         userList = userList.stream()
-                .filter(u -> !u.getUserId().equals(ShiroKit.getUserNotNull().getId()))
+                .filter(u -> !u.getUserId().equals(ShiroKit.getUserNotNull().getId()) && u.getStatus().equals(ManagerStatus.OK.getCode()))
                 .collect(Collectors.toList());
         model.addAttribute("userList", userList);
         model.addAttribute("customerIdList", customerIdList);
@@ -177,6 +182,28 @@ public class CustomerSourceController extends BaseController {
         return LayuiPageFactory.createPageInfo(wrap);
     }
 
+
+    /**
+     * 删除客户
+     *
+     * @author fengshuonan
+     * @Date 2018/12/23 6:06 PM
+     */
+    @RequestMapping(value = "/delete")
+    @ResponseBody
+    @BussinessLog(value = "删除客户", key = "customerId", dict = CustomerMap.class)
+    public Object delete(@RequestParam Long customerId) {
+
+        //缓存客户名称
+        LogObjectHolder.me().set(ConstantFactory.me().getCustomerSourceName(customerId));
+
+        //逻辑删除
+        CustomerSource old = this.customerSourceService.getById(customerId);
+        old.setValid(0);
+        this.customerSourceService.updateById(old);
+
+        return SUCCESS_TIP;
+    }
 
 
 

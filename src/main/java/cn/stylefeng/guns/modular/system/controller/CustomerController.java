@@ -38,6 +38,7 @@ import cn.stylefeng.guns.core.common.annotion.BussinessLog;
 import cn.stylefeng.guns.core.common.annotion.Permission;
 import cn.stylefeng.guns.core.common.constant.dictmap.CustomerMap;
 import cn.stylefeng.guns.core.common.constant.factory.ConstantFactory;
+import cn.stylefeng.guns.core.common.constant.state.ManagerStatus;
 import cn.stylefeng.guns.core.common.exception.BizExceptionEnum;
 import cn.stylefeng.guns.core.common.page.LayuiPageFactory;
 import cn.stylefeng.guns.core.log.LogObjectHolder;
@@ -137,7 +138,7 @@ public class CustomerController extends BaseController {
         LogObjectHolder.me().set(customer);
         List<User> userList = userService.list();
         userList = userList.stream()
-                .filter(u -> !u.getUserId().equals(ShiroKit.getUserNotNull().getId()))
+                .filter(u -> !u.getUserId().equals(ShiroKit.getUserNotNull().getId()) && u.getStatus().equals(ManagerStatus.OK.getCode()))
                 .collect(Collectors.toList());
         model.addAttribute("userList", userList);
         return PREFIX + "customer_share.html";
